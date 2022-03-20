@@ -1,0 +1,107 @@
+'use strict';
+
+const fs = require('fs');
+
+process.stdin.resume();
+process.stdin.setEncoding('utf-8');
+
+let inputString = '';
+let currentLine = 0;
+
+process.stdin.on('data', function(inputStdin) {
+    inputString += inputStdin;
+});
+
+process.stdin.on('end', function() {
+    inputString = inputString.split('\n');
+
+    main();
+});
+
+function readLine() {
+    return inputString[currentLine++];
+}
+
+/*
+ * Complete the 'bfs' function below.
+ *
+ * The function is expected to return an INTEGER_ARRAY.
+ * The function accepts following parameters:
+ *  1. INTEGER n
+ *  2. INTEGER m
+ *  3. 2D_INTEGER_ARRAY edges
+ *  4. INTEGER s
+ */
+
+function bfs(n, m, edges, s) {
+    // Write your code here
+    let visited = [];
+    let bfs = [];
+    let weight = [];
+ 
+    // initialze visited array with false and weight array to -1 
+    for(let i=0;i<=n; i++){
+         visited.push(false);
+         weight.push(-1);
+    }
+    
+    weight[s] = 0; // initialze start node to 0
+    
+    for(let i = 1;i<=n;i++){ // iterate from all nodes
+        
+        if(!visited[i]){    // if the node is visited do not perform bfs
+            
+            let queue = [i];   // initialze queue with current node
+            visited[i] = true;  // make that node to visited true
+            
+            while(queue.length != 0){ 
+                
+                let node = queue[0];  // remove node from queue and add it to bfs
+                bfs.push(queue[0]);
+                queue.shift();
+                
+                
+                // travsese through all `nodes connecting to current nodes and push that to the queue and mark that node visited = true
+                for(let j = 0; j<edges.length;j++){ 
+                    if(edges[j][0] == node){
+                        if(!visited[edges[j][1]]){
+                            queue.push(edges[j][1]);
+                            weight[edges[j][1]] =  weight[node] + 6; // add 6 to weight as per problem statement
+                            visited[edges[j][1]] = true;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    return weight;
+}
+
+function main() {
+    const ws = fs.createWriteStream(process.env.OUTPUT_PATH);
+
+    const q = parseInt(readLine().trim(), 10);
+
+    for (let qItr = 0; qItr < q; qItr++) {
+        const firstMultipleInput = readLine().replace(/\s+$/g, '').split(' ');
+
+        const n = parseInt(firstMultipleInput[0], 10);
+
+        const m = parseInt(firstMultipleInput[1], 10);
+
+        let edges = Array(m);
+
+        for (let i = 0; i < m; i++) {
+            edges[i] = readLine().replace(/\s+$/g, '').split(' ').map(edgesTemp => parseInt(edgesTemp, 10));
+        }
+
+        const s = parseInt(readLine().trim(), 10);
+
+        const result = bfs(n, m, edges, s);
+
+        ws.write(result.join(' ') + '\n');
+    }
+
+    ws.end();
+}
