@@ -33,6 +33,7 @@ function readLine() {
  *  4. INTEGER s
  */
 
+// logic starts from here
 function bfs(n, m, edges, s) {
     // Write your code here
     let visited = [];
